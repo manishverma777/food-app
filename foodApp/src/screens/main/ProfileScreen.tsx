@@ -3,6 +3,7 @@ import {
   Image,
   ScrollView,
   StyleSheet,
+  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
@@ -12,17 +13,39 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {colors} from '../../theme/colors';
 import {UserProfile} from '../../types/profile';
+import ImagePicker from 'react-native-image-crop-picker';
+import {setProfileImage} from './slice'
+import { useDispatch } from 'react-redux';
 
 interface ProfileScreenProps {
   onChangeProfile: (profile: UserProfile) => void;
+  onLogout: () => void;
   profile: UserProfile;
+  onSave?: () => void;
 }
 
 export const ProfileScreen = ({
   onChangeProfile,
+  onLogout,
   profile,
+  onSave,
 }: ProfileScreenProps) => {
   const [draft, setDraft] = useState(profile);
+  const [image, setImage] = useState('');
+  const dispatch = useDispatch();
+const pickImage = () => {
+  ImagePicker.openPicker({
+    mediaType: 'photo',
+    cropping: false,
+  })
+   .then(img => {
+  setImage(img.path);
+  dispatch(setProfileImage(img.path));
+})
+    .catch(error => {
+      console.log(error);
+    });
+};
 
   const updateField = (field: keyof UserProfile, value: string) => {
     const next = {...draft, [field]: value};
@@ -32,15 +55,22 @@ export const ProfileScreen = ({
 
   return (
     <SafeAreaView style={styles.safe}>
+      <StatusBar backgroundColor={colors.background} barStyle="dark-content" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Profile</Text>
         <View style={styles.profileCard}>
-          <Image
-            source={{
-              uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
-            }}
-            style={styles.avatar}
-          />
+         <TouchableOpacity onPress={pickImage}>
+  <Image
+    source={
+      image
+        ? { uri: image }
+        : {
+            uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+          }
+    }
+    style={styles.avatar}
+  />
+</TouchableOpacity>
           <Text style={styles.name}>{draft.name}</Text>
           <Text style={styles.email}>{draft.email}</Text>
         </View>
@@ -70,8 +100,20 @@ export const ProfileScreen = ({
             value={draft.address}
           />
 
-          <TouchableOpacity activeOpacity={0.84} style={styles.saveButton}>
+          <TouchableOpacity
+            activeOpacity={0.84}
+            style={styles.saveButton}
+            onPress={() => onSave?.()}
+          >
             <Text style={styles.saveText}>Saved</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.84}
+            style={styles.logoutButton}
+            onPress={onLogout}
+          >
+            <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -185,6 +227,19 @@ const styles = StyleSheet.create({
   },
   saveText: {
     color: colors.green,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  logoutButton: {
+    alignItems: 'center',
+    backgroundColor: '#FF4D4F',
+    borderRadius: 16,
+    justifyContent: 'center',
+    minHeight: 44,
+    marginTop: 12,
+  },
+  logoutText: {
+    color: colors.white,
     fontSize: 15,
     fontWeight: '900',
   },

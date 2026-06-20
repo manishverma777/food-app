@@ -19,13 +19,17 @@ import {colors} from '../../theme/colors';
 const authImage = require('../../assets/images/foodie-reference.png');
 
 interface LoginScreenProps {
-  onLogin: () => void;
+  onLogin: (email: string, password: string) => void;
   onSignUp: () => void;
 }
 
 export const LoginScreen = ({onLogin, onSignUp}: LoginScreenProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleLogin = () => {
+    onLogin(email.trim(), password);
+  };
 
   return (
     <ImageBackground blurRadius={9} source={authImage} style={styles.background}>
@@ -66,7 +70,7 @@ export const LoginScreen = ({onLogin, onSignUp}: LoginScreenProps) => {
                 />
               </View>
 
-              <PrimaryButton onPress={onLogin} title="Login" />
+              <PrimaryButton onPress={handleLogin} title="Login" />
 
               <TouchableOpacity onPress={() => {}} style={styles.forgot}>
                 <Text style={styles.forgotText}>Forgot Password?</Text>

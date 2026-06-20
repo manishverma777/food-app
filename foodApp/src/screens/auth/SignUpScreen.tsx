@@ -20,13 +20,17 @@ const authImage = require('../../assets/images/foodie-reference.png');
 
 interface SignUpScreenProps {
   onBack: () => void;
-  onCreateAccount: () => void;
+  onCreateAccount: (name: string, email: string, password: string) => void;
 }
 
 export const SignUpScreen = ({onBack, onCreateAccount}: SignUpScreenProps) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleCreateAccount = () => {
+    onCreateAccount(name.trim(), email.trim(), password);
+  };
 
   return (
     <ImageBackground blurRadius={10} source={authImage} style={styles.background}>
@@ -74,7 +78,7 @@ export const SignUpScreen = ({onBack, onCreateAccount}: SignUpScreenProps) => {
                 />
               </View>
 
-              <PrimaryButton onPress={onCreateAccount} title="Sign Up" />
+              <PrimaryButton onPress={handleCreateAccount} title="Sign Up" />
 
               <TouchableOpacity onPress={onBack} style={styles.loginLink}>
                 <Text style={styles.loginText}>Already have an account? Login</Text>

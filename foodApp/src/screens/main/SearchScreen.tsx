@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import {ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
+import {ScrollView, StyleSheet, StatusBar, Text, TextInput, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {ProductCard} from '../../components/ProductCard';
@@ -39,6 +39,7 @@ export const SearchScreen = ({
 
   return (
     <SafeAreaView style={styles.safe}>
+      <StatusBar backgroundColor={colors.background} barStyle="dark-content" />
       <Text style={styles.title}>Search</Text>
       <View style={styles.searchBox}>
         <Text style={styles.icon}>S</Text>

@@ -15,6 +15,8 @@ import {ProductCard} from '../../components/ProductCard';
 import {categories} from '../../data/products';
 import {colors} from '../../theme/colors';
 import {Product} from '../../types/product';
+import { selectProfileImage } from './selector';
+import { useSelector } from 'react-redux';
 
 interface HomeScreenProps {
   favoriteIds: string[];
@@ -50,6 +52,8 @@ export const HomeScreen = ({
       return matchesCategory && matchesSearch;
     });
   }, [activeCategory, products, query]);
+  const images = useSelector(selectProfileImage);
+  console.log('images',images)
 
   return (
     <View style={styles.safe}>
@@ -59,7 +63,7 @@ export const HomeScreen = ({
           <View style={styles.profileRow}>
             <Image
               source={{
-                uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+                uri: images || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
               }}
               style={styles.avatar}
             />

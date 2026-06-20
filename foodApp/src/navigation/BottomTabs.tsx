@@ -3,14 +3,40 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {colors} from '../theme/colors';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {MainTab} from '../types/navigation';
 
-const tabs: Array<{key: MainTab; label: string; icon: string}> = [
-  {key: 'home', label: 'Home', icon: 'H'},
-  {key: 'search', label: 'Search', icon: 'S'},
-  {key: 'favorites', label: 'Favorites', icon: 'F'},
-  {key: 'cart', label: 'Cart', icon: 'C'},
-  {key: 'profile', label: 'Profile', icon: 'P'},
+const tabs = [
+  {
+    key: 'home',
+    label: 'Home',
+    activeIcon: 'home',
+    inactiveIcon: 'home-outline',
+  },
+  {
+    key: 'search',
+    label: 'Search',
+    activeIcon: 'search',
+    inactiveIcon: 'search-outline',
+  },
+  {
+    key: 'favorites',
+    label: 'Favorites',
+    activeIcon: 'heart',
+    inactiveIcon: 'heart-outline',
+  },
+  {
+    key: 'cart',
+    label: 'Cart',
+    activeIcon: 'cart',
+    inactiveIcon: 'cart-outline',
+  },
+  {
+    key: 'profile',
+    label: 'Profile',
+    activeIcon: 'person',
+    inactiveIcon: 'person-outline',
+  },
 ];
 
 interface BottomTabsProps {
@@ -46,18 +72,24 @@ export const BottomTabs = ({
             onPress={() => onTabPress(tab.key)}
             style={styles.item}
           >
-            <View style={[styles.iconCircle, active && styles.iconCircleActive]}>
-              <Text style={[styles.icon, active && styles.active]}>{tab.icon}</Text>
-              {badge > 0 ? (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{badge}</Text>
-                </View>
-              ) : null}
-            </View>
+          <View style={[styles.iconCircle, active && styles.iconCircleActive]}>
+ <Icon
+  name={active ? tab.activeIcon : tab.inactiveIcon}
+  size={22}
+  color={active ? colors.green : colors.dark}
+/>
+
+  {badge > 0 ? (
+    <View style={styles.badge}>
+      <Text style={styles.badgeText}>{badge}</Text>
+    </View>
+  ) : null}
+</View>
             <Text style={[styles.label, active && styles.active]}>{tab.label}</Text>
           </TouchableOpacity>
         );
       })}
+      
     </View>
   );
 };

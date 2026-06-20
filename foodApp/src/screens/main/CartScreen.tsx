@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {ScrollView, StyleSheet, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {PrimaryButton} from '../../components/ui/PrimaryButton';
@@ -36,6 +36,7 @@ export const CartScreen = ({
 
   return (
     <SafeAreaView style={styles.safe}>
+      <StatusBar backgroundColor={colors.background} barStyle="dark-content" />
       <Text style={styles.title}>Cart</Text>
       <ScrollView showsVerticalScrollIndicator={false}>
         {cartProducts.length > 0 ? (

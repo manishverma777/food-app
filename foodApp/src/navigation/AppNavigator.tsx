@@ -1,5 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
+import {useAppDispatch, useAppSelector} from '../store/hooks';
+import type {RootState} from '../store/store';
 
 import {products as initialProducts} from '../data/products';
 import {LoginScreen} from '../screens/auth/LoginScreen';
@@ -15,6 +17,7 @@ import {AppRoute, MainTab} from '../types/navigation';
 import {CartItems} from '../types/product';
 import {UserProfile} from '../types/profile';
 import {BottomTabs} from './BottomTabs';
+import {loginSuccess, logout, updateProfile} from '../store/authSlice';
 
 const defaultProfile: UserProfile = {
   name: 'Sarah Johnson',
@@ -24,19 +27,24 @@ const defaultProfile: UserProfile = {
 };
 
 export const AppNavigator = () => {
-  const [route, setRoute] = useState<AppRoute>('login');
+  const auth = useAppSelector((state: RootState) => state.auth);
+  const dispatch = useAppDispatch();
+  const [route, setRoute] = useState<AppRoute>(
+    auth.isAuthenticated ? 'home' : 'login',
+  );
   const [favoriteIds, setFavoriteIds] = useState<string[]>(
     initialProducts
       .filter(product => product.favorite)
       .map(product => product.id),
   );
   const [cartItems, setCartItems] = useState<CartItems>({});
-  const [profile, setProfile] = useState<UserProfile>(defaultProfile);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
   const activeTab: MainTab = isMainTab(route) ? route : 'home';
   const selectedProduct = initialProducts.find(
     product => product.id === selectedProductId,
   );
+  const profile = auth.user ?? defaultProfile;
 
   const cartCount = useMemo(
     () => Object.values(cartItems).reduce((total, quantity) => total + quantity, 0),
@@ -73,13 +81,65 @@ export const AppNavigator = () => {
     });
   };
 
-  if (route === 'login') {
-    return (
-      <LoginScreen
-        onLogin={() => setRoute('home')}
-        onSignUp={() => setRoute('signup')}
-      />
+  const handleLogin = (email: string, _password: string) => {
+    const name = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '') || 'Foodie User';
+    const user: UserProfile = {
+      name,
+      email,
+      phone: '',
+      address: '',
+    };
+
+    dispatch(
+      loginSuccess({
+        token: Math.random().toString(36).slice(2),
+        user,
+      }),
     );
+    setRoute('home');
+  };
+
+  const handleCreateAccount = (
+    name: string,
+    email: string,
+    _password: string,
+  ) => {
+    const user: UserProfile = {
+      name: name || email.split('@')[0] || 'Foodie User',
+      email,
+      phone: '',
+      address: '',
+    };
+
+    dispatch(
+      loginSuccess({
+        token: Math.random().toString(36).slice(2),
+        user,
+      }),
+    );
+    setRoute('home');
+  };
+
+  const handleUpdateProfile = (nextProfile: UserProfile) => {
+    dispatch(updateProfile(nextProfile));
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    setRoute('login');
+  };
+
+  if (!auth.isAuthenticated) {
+    if (route === 'signup') {
+      return (
+        <SignUpScreen
+          onBack={() => setRoute('login')}
+          onCreateAccount={handleCreateAccount}
+        />
+      );
+    }
+
+    return <LoginScreen onLogin={handleLogin} onSignUp={() => setRoute('signup')} />;
   }
 
   if (route === 'signup') {
@@ -111,8 +171,10 @@ export const AppNavigator = () => {
             favoriteIds,
             onProductPress: setSelectedProductId,
             profile,
-            setProfile,
+            onChangeProfile: handleUpdateProfile,
+            onLogout: handleLogout,
             toggleFavorite,
+            setRoute,
           })
         )}
       </View>
@@ -139,8 +201,10 @@ interface MainRouteOptions {
   favoriteIds: string[];
   onProductPress: (productId: string) => void;
   profile: UserProfile;
-  setProfile: (profile: UserProfile) => void;
+  onChangeProfile: (profile: UserProfile) => void;
+  onLogout: () => void;
   toggleFavorite: (productId: string) => void;
+  setRoute: (route: AppRoute) => void;
 }
 
 const renderMainRoute = ({
@@ -151,8 +215,10 @@ const renderMainRoute = ({
   favoriteIds,
   onProductPress,
   profile,
-  setProfile,
+  onChangeProfile,
+  onLogout,
   toggleFavorite,
+  setRoute,
 }: MainRouteOptions) => {
   switch (activeTab) {
     case 'search':
@@ -185,7 +251,14 @@ const renderMainRoute = ({
         />
       );
     case 'profile':
-      return <ProfileScreen onChangeProfile={setProfile} profile={profile} />;
+      return (
+        <ProfileScreen
+          onChangeProfile={onChangeProfile}
+          onLogout={onLogout}
+          profile={profile}
+          onSave={() => setRoute('home')}
+        />
+      );
     case 'home':
     default:
       return (

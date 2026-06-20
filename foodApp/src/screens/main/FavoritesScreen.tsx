@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, StatusBar, Text, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {ProductCard} from '../../components/ProductCard';
@@ -28,6 +28,7 @@ export const FavoritesScreen = ({
 
   return (
     <SafeAreaView edges={['top']} style={styles.safe}>
+      <StatusBar backgroundColor={colors.green} barStyle="light-content" />
       <View style={styles.header}>
         <Text style={styles.title}>My Favorites</Text>
       </View>

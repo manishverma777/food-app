@@ -3,6 +3,7 @@ import {
   Image,
   ScrollView,
   StyleSheet,
+  StatusBar,
   Text,
   TouchableOpacity,
   View,
@@ -28,6 +29,7 @@ export const ProductDetailScreen = ({
   product,
 }: ProductDetailScreenProps) => (
   <SafeAreaView edges={['top']} style={styles.safe}>
+    <StatusBar backgroundColor={colors.green} barStyle="light-content" />
     <View style={styles.topBar}>
       <TouchableOpacity activeOpacity={0.78} onPress={onBack} style={styles.iconButton}>
         <Text style={styles.iconText}>{'<'}</Text>

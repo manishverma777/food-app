@@ -25,6 +25,7 @@ interface HomeScreenProps {
   onToggleFavorite: (productId: string) => void;
   products: Product[];
   userName: string;
+   onOpenDrawer: () => void;
 }
 
 export const HomeScreen = ({
@@ -32,6 +33,7 @@ export const HomeScreen = ({
   onAddToCart,
   onProductPress,
   onToggleFavorite,
+  onOpenDrawer,
   products,
   userName,
 }: HomeScreenProps) => {
@@ -61,6 +63,18 @@ export const HomeScreen = ({
       <SafeAreaView edges={['top']} style={styles.headerSafe}>
         <View style={styles.header}>
           <View style={styles.profileRow}>
+             <TouchableOpacity
+    onPress={onOpenDrawer}
+    style={{marginRight: 12}}>
+    <Text
+      style={{
+        color: 'white',
+        fontSize: 28,
+        fontWeight: 'bold',
+      }}>
+      ☰
+    </Text>
+  </TouchableOpacity>
             <Image
               source={{
                 uri: images || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',

@@ -18,6 +18,7 @@ import {CartItems} from '../types/product';
 import {UserProfile} from '../types/profile';
 import {BottomTabs} from './BottomTabs';
 import {loginSuccess, logout, updateProfile} from '../store/authSlice';
+import { CustomDrawer } from './custom-drawer';
 
 const defaultProfile: UserProfile = {
   name: 'Sarah Johnson',
@@ -39,6 +40,7 @@ export const AppNavigator = () => {
   );
   const [cartItems, setCartItems] = useState<CartItems>({});
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [drawerVisible, setDrawerVisible] = useState(false);
 
   const activeTab: MainTab = isMainTab(route) ? route : 'home';
   const selectedProduct = initialProducts.find(
@@ -175,6 +177,7 @@ export const AppNavigator = () => {
             onLogout: handleLogout,
             toggleFavorite,
             setRoute,
+            onOpenDrawer: () => setDrawerVisible(true),
           })
         )}
       </View>
@@ -186,6 +189,12 @@ export const AppNavigator = () => {
           onTabPress={setRoute}
         />
       )}
+           <CustomDrawer
+    visible={drawerVisible}
+    activeTab={activeTab}
+    onClose={() => setDrawerVisible(false)}
+    onNavigate={setRoute}
+  />
     </View>
   );
 };
@@ -205,6 +214,7 @@ interface MainRouteOptions {
   onLogout: () => void;
   toggleFavorite: (productId: string) => void;
   setRoute: (route: AppRoute) => void;
+  onOpenDrawer: () => void;
 }
 
 const renderMainRoute = ({
@@ -215,6 +225,7 @@ const renderMainRoute = ({
   favoriteIds,
   onProductPress,
   profile,
+  onOpenDrawer,
   onChangeProfile,
   onLogout,
   toggleFavorite,
@@ -262,14 +273,15 @@ const renderMainRoute = ({
     case 'home':
     default:
       return (
-        <HomeScreen
-          favoriteIds={favoriteIds}
-          onAddToCart={addToCart}
-          onProductPress={onProductPress}
-          onToggleFavorite={toggleFavorite}
-          products={initialProducts}
-          userName={profile.name}
-        />
+       <HomeScreen
+  favoriteIds={favoriteIds}
+  onAddToCart={addToCart}
+  onProductPress={onProductPress}
+  onToggleFavorite={toggleFavorite}
+  products={initialProducts}
+  userName={profile.name}
+  onOpenDrawer={onOpenDrawer}
+/>
       );
   }
 };
@@ -278,6 +290,7 @@ const styles = StyleSheet.create({
   root: {
     backgroundColor: colors.background,
     flex: 1,
+     position: 'relative',
   },
   content: {
     flex: 1,
